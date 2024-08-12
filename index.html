@@ -7,7 +7,6 @@
 </head>
 <body>
     <h1>Website Change Detector</h1>
-    <button id="checkButton">Check for Changes</button>
     <p id="status">Status: Not checked yet</p>
 
     <script>
@@ -51,7 +50,11 @@
             }
         }
 
-        document.getElementById('checkButton').addEventListener('click', checkForChanges);
+        // Check for changes every minute (60000 milliseconds)
+        setInterval(checkForChanges, 60000);
+
+        // Optionally, run the first check immediately
+        checkForChanges();
     </script>
 </body>
 </html>
