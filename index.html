@@ -55,6 +55,12 @@
             return data.contents;
         }
 
+        // Normalize the HTML by removing dynamic content
+        function normalizeHTML(html) {
+            // Remove script tags
+            return html.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '');
+        }
+
         // Function to hash the HTML using SHA-256
         async function hashHTML(html) {
             const encoder = new TextEncoder();
@@ -66,11 +72,12 @@
         }
 
         // Function to check if the website has changed
-        let previousHash = '';
+        let previousHash = localStorage.getItem('previousHash') || '';
         async function checkForChanges() {
             const url = 'https://example.com'; // The URL to check
             try {
-                const html = await fetchHTML(url);
+                let html = await fetchHTML(url);
+                html = normalizeHTML(html); // Normalize the HTML
                 const currentHash = await hashHTML(html);
 
                 if (previousHash && previousHash === currentHash) {
@@ -81,6 +88,7 @@
                 }
 
                 previousHash = currentHash;
+                localStorage.setItem('previousHash', currentHash); // Store the hash in localStorage
             } catch (error) {
                 alert('Error:', error);
                 document.getElementById('status').textContent = 'Status: Error occurred while checking';
