@@ -19,14 +19,14 @@
                 config = await response.json();
                 console.log('Configuration loaded:', config);
             } catch (error) {
-                console.error('Error loading configuration:', error);
+                alert('Error loading configuration:', error);
             }
         }
 
         // Example function to notify via webhook
         async function notifyWebhook(changeMessage) {
             if (!config.webhookUrl) {
-                console.error('Webhook URL is not defined in the config');
+                alert('Webhook URL is not defined in the config');
                 return;
             }
 
@@ -41,10 +41,10 @@
                 if (response.ok) {
                     console.log('Notification sent successfully');
                 } else {
-                    console.error('Failed to send notification', response.statusText);
+                    alert('Failed to send notification', response.statusText);
                 }
             } catch (error) {
-                console.error('Error sending notification:', error);
+                alert('Error sending notification:', error);
             }
         }
 
@@ -82,7 +82,7 @@
 
                 previousHash = currentHash;
             } catch (error) {
-                console.error('Error:', error);
+                alert('Error:', error);
                 document.getElementById('status').textContent = 'Status: Error occurred while checking';
             }
         }
@@ -99,4 +99,3 @@
     </script>
 </body>
 </html>
-
