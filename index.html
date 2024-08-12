@@ -4,48 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Change Detector</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script>
+        // Initialize EmailJS with your User ID
+        (function(){
+            emailjs.init("YOUR_USER_ID");
+        })();
+    </script>
 </head>
 <body>
     <h1>Website Change Detector</h1>
     <p id="status">Status: Not checked yet</p>
 
     <script>
-        let config = {};
+        let config = {
+            emailServiceID: "service_znnmxot",
+            emailTemplateID: "template_gio7ten",
+            userID: "dE6gWHZ2PCUpTutSh"
+        };
 
-        // Load the configuration file
-        async function loadConfig() {
-            try {
-                const response = await fetch('config.json');
-                config = await response.json();
-                console.log('Configuration loaded:', config);
-            } catch (error) {
-                alert('Error loading configuration:', error);
-            }
-        }
+        // Example function to send an email via EmailJS
+        async function sendEmailNotification(changeMessage) {
+            const templateParams = {
+                message: changeMessage
+            };
 
-        // Example function to notify via webhook
-        async function notifyWebhook(changeMessage) {
-            if (!config.webhookUrl) {
-                alert('Webhook URL is not defined in the config');
-                return;
-            }
-
-            try {
-                const response = await fetch(config.webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ content: changeMessage })
+            emailjs.send(config.emailServiceID, config.emailTemplateID, templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                }, function(error) {
+                    console.error('FAILED...', error);
                 });
-                if (response.ok) {
-                    console.log('Notification sent successfully');
-                } else {
-                    alert('Failed to send notification', response.statusText);
-                }
-            } catch (error) {
-                alert('Error sending notification:', error);
-            }
         }
 
         // Function to fetch the HTML from a website
@@ -74,7 +63,7 @@
         // Function to check if the website has changed
         let previousHash = localStorage.getItem('previousHash') || '';
         async function checkForChanges() {
-            const url = atob('aHR0cHM6Ly93d3cuY2FsZ2FyeS5jYS9lbnZpcm9ubWVudC9wcm9ncmFtcy9jbGVhbi1lbmVyZ3ktaW1wcm92ZW1lbnQtcHJvZ3JhbS5odG1s'); // The URL to check
+            const url = 'https://example.com'; // The URL to check
             try {
                 let html = await fetchHTML(url);
                 html = normalizeHTML(html); // Normalize the HTML
@@ -84,7 +73,7 @@
                     document.getElementById('status').textContent = 'Status: No changes detected';
                 } else {
                     document.getElementById('status').textContent = 'Status: Website has changed!';
-                    await notifyWebhook('The website at ' + url + ' has changed.');
+                    await sendEmailNotification('The website at ' + url + ' has changed.');
                 }
 
                 previousHash = currentHash;
@@ -97,7 +86,6 @@
 
         // Initialize the application
         async function init() {
-            await loadConfig();
             setInterval(checkForChanges, 60000); // Check every minute
             checkForChanges(); // Initial check
         }
