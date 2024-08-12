@@ -74,7 +74,7 @@
         // Function to check if the website has changed
         let previousHash = localStorage.getItem('previousHash') || '';
         async function checkForChanges() {
-            const url = 'https://example.com'; // The URL to check
+            const url = atob('aHR0cHM6Ly93d3cuY2FsZ2FyeS5jYS9lbnZpcm9ubWVudC9wcm9ncmFtcy9jbGVhbi1lbmVyZ3ktaW1wcm92ZW1lbnQtcHJvZ3JhbS5odG1s'); // The URL to check
             try {
                 let html = await fetchHTML(url);
                 html = normalizeHTML(html); // Normalize the HTML
