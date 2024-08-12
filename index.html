@@ -8,7 +8,7 @@
     <script>
         // Initialize EmailJS with your User ID
         (function(){
-            emailjs.init("dE6gWHZ2PCUpTutSh");
+            emailjs.init("YOUR_USER_ID");
         })();
     </script>
 </head>
@@ -18,15 +18,16 @@
 
     <script>
         let config = {
-            emailServiceID: "service_znnmxot",
-            emailTemplateID: "template_gio7ten",
-            userID: "dE6gWHZ2PCUpTutSh"
+            emailServiceID: "YOUR_SERVICE_ID",
+            emailTemplateID: "YOUR_TEMPLATE_ID",
+            userID: "YOUR_USER_ID"
         };
 
         // Example function to send an email via EmailJS
-        async function sendEmailNotification(changeMessage) {
+        async function sendEmailNotification(subject, message) {
             const templateParams = {
-                message: changeMessage
+                subject: subject,
+                message: message
             };
 
             emailjs.send(config.emailServiceID, config.emailTemplateID, templateParams)
@@ -73,7 +74,7 @@
                     document.getElementById('status').textContent = 'Status: No changes detected';
                 } else {
                     document.getElementById('status').textContent = 'Status: Website has changed!';
-                    await sendEmailNotification('The website at ' + url + ' has changed.');
+                    await sendEmailNotification('Website Changed', 'The website at ' + url + ' has changed.');
                 }
 
                 previousHash = currentHash;
@@ -84,8 +85,9 @@
             }
         }
 
-        // Initialize the application
+        // Initialize the application and send a test email
         async function init() {
+            await sendEmailNotification('Test Email', 'This is a test email to confirm that the EmailJS setup is working.');
             setInterval(checkForChanges, 60000); // Check every minute
             checkForChanges(); // Initial check
         }
