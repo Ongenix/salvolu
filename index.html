@@ -10,8 +10,43 @@
     <p id="status">Status: Not checked yet</p>
 
     <script>
-        // Store the previous hash
-        let previousHash = '';
+        let config = {};
+
+        // Load the configuration file
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                config = await response.json();
+                console.log('Configuration loaded:', config);
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+            }
+        }
+
+        // Example function to notify via webhook
+        async function notifyWebhook(changeMessage) {
+            if (!config.webhookUrl) {
+                console.error('Webhook URL is not defined in the config');
+                return;
+            }
+
+            try {
+                const response = await fetch(config.webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: changeMessage })
+                });
+                if (response.ok) {
+                    console.log('Notification sent successfully');
+                } else {
+                    console.error('Failed to send notification', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error sending notification:', error);
+            }
+        }
 
         // Function to fetch the HTML from a website
         async function fetchHTML(url) {
@@ -31,6 +66,7 @@
         }
 
         // Function to check if the website has changed
+        let previousHash = '';
         async function checkForChanges() {
             const url = 'https://example.com'; // The URL to check
             try {
@@ -41,6 +77,7 @@
                     document.getElementById('status').textContent = 'Status: No changes detected';
                 } else {
                     document.getElementById('status').textContent = 'Status: Website has changed!';
+                    await notifyWebhook('The website at ' + url + ' has changed.');
                 }
 
                 previousHash = currentHash;
@@ -50,11 +87,16 @@
             }
         }
 
-        // Check for changes every minute (60000 milliseconds)
-        setInterval(checkForChanges, 60000);
+        // Initialize the application
+        async function init() {
+            await loadConfig();
+            setInterval(checkForChanges, 60000); // Check every minute
+            checkForChanges(); // Initial check
+        }
 
-        // Optionally, run the first check immediately
-        checkForChanges();
+        // Start the application
+        init();
     </script>
 </body>
 </html>
+
