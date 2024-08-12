@@ -63,7 +63,7 @@
         // Function to check if the website has changed
         let previousHash = localStorage.getItem('previousHash') || '';
         async function checkForChanges() {
-            const url = 'https://example.com'; // The URL to check
+            const url = 'https://www.calgary.ca/environment/programs/clean-energy-improvement-program.html'; // The URL to check
             try {
                 let html = await fetchHTML(url);
                 html = normalizeHTML(html); // Normalize the HTML
