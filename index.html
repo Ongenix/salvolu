@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Change Detector</title>
+</head>
+<body>
+    <h1>Website Change Detector</h1>
+    <button id="checkButton">Check for Changes</button>
+    <p id="status">Status: Not checked yet</p>
+
+    <script>
+        // Store the previous hash
+        let previousHash = '';
+
+        // Function to fetch the HTML from a website
+        async function fetchHTML(url) {
+            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+            const data = await response.json();
+            return data.contents;
+        }
+
+        // Function to hash the HTML using SHA-256
+        async function hashHTML(html) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(html);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Function to check if the website has changed
+        async function checkForChanges() {
+            const url = 'https://example.com'; // The URL to check
+            try {
+                const html = await fetchHTML(url);
+                const currentHash = await hashHTML(html);
+
+                if (previousHash && previousHash === currentHash) {
+                    document.getElementById('status').textContent = 'Status: No changes detected';
+                } else {
+                    document.getElementById('status').textContent = 'Status: Website has changed!';
+                }
+
+                previousHash = currentHash;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('status').textContent = 'Status: Error occurred while checking';
+            }
+        }
+
+        document.getElementById('checkButton').addEventListener('click', checkForChanges);
+    </script>
+</body>
+</html>
